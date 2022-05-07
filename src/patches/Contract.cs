@@ -15,8 +15,14 @@ namespace ScalingAIDifficulty {
         public static void Postfix(Contract __instance, MissionResult result, bool isGoodFaithEffort) {
             try {
                 Settings s = SAD.settings;
+
+                if (s.IgnoreContracts.Contains(__instance.Override.ID)) {
+                  SAD.modLog.Debug?.Write($"Contract {__instance.Override.ID} is in IgnoreContracts. No points gained or lost.");
+                  unitDestroyedThisContract = false;
+                  return;
+                }
+
                 SimGameState sim = SceneSingletonBehavior<UnityGameInstance>.Instance.Game.Simulation;
-                SAD.modLog.Debug?.Write($"Contract complete: {__instance.Name}, override: {__instance.Override.ID}");
 
                 float basePointChangeMultiplier = (float)sim.Constants.Story.ArgoMechTechs / 100.0f;
                 float basePointChange = 0;
@@ -43,7 +49,8 @@ namespace ScalingAIDifficulty {
                   basePointChange = s.points.unitDestroyed;
                 }
 
-                SAD.modLog.Debug?.Write($"MissionResult: {result}, pilotInjured: {pilotInjured}, pilotKilled: {pilotKilled}, unitDestroyedThisContract: {unitDestroyedThisContract}");
+                SAD.modLog.Debug?.Write($"Contract complete: {__instance.Override.ID}, MissionResult: {result}");
+                SAD.modLog.Debug?.Write($"pilotInjured: {pilotInjured}, pilotKilled: {pilotKilled}, unitDestroyedThisContract: {unitDestroyedThisContract}");
 
                  float newPoints = basePointChange * basePointChangeMultiplier;
                 if (sim.CompanyStats.ContainsStatistic("SAD_points")) {

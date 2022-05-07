@@ -28,5 +28,7 @@ namespace ScalingAIDifficulty {
         public Points points = new Points();
         public PointEffect[] EnemyEffectsPerPoint;
         public PointEffect[] SelfEffectsPerPoint;
+        public Dictionary<string, float> ContractDifficulty = new Dictionary<string, float>();
+        public List<string> IgnoreContracts = new List<string>();
     }
 }

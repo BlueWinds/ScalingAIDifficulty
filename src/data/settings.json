@@ -29,5 +29,12 @@
       "operation": "Float_Add",
       "modValue": -0.01
     }
+  ],
+  "ContractDifficulty": {
+    "Blackout_DugInDeep": 5,
+    "Blackout_HeavyStatic": -5
+  },
+  "IgnoreContracts": [
+    "Blackout_UnknownCause"
   ]
 }

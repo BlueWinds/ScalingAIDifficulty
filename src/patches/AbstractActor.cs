@@ -12,13 +12,23 @@ namespace ScalingAIDifficulty {
             try {
                 Settings s = SAD.settings;
                 SimGameState sim = SceneSingletonBehavior<UnityGameInstance>.Instance.Game.Simulation;
+                string overrideID = __instance.Combat.ActiveContract.Override.ID;
+
+                if (s.IgnoreContracts.Contains(overrideID)) {
+                  SAD.modLog.Debug?.Write($"Contract {overrideID} is in IgnoreContracts. Not applying effects to {__instance.UnitName}");
+                  return;
+                }
 
                 if (!sim.CompanyStats.ContainsStatistic("SAD_points")) {
-                  SAD.modLog.Debug?.Write($"Company does not have SAD_points statistic; No effects applied.");
+                  SAD.modLog.Debug?.Write($"Company does not have SAD_points statistic. No effects applied to {__instance.UnitName}");
                   return;
                 }
 
                 float points = sim.CompanyStats.GetStatistic("SAD_points").CurrentValue.Value<float>();
+
+                if (s.ContractDifficulty.ContainsKey(overrideID)) {
+                    points += s.ContractDifficulty[overrideID];
+                }
 
                 if (__instance.team.IsLocalPlayer) {
                     SAD.modLog.Debug?.Write($"Applying SAD stats for {__instance.UnitName} on player team");
