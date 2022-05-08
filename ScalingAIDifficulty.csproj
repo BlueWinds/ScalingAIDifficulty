@@ -85,7 +85,7 @@
   </PropertyGroup>
   <Target Name="AfterBuild">
     <Copy
-      SourceFiles="$(TargetPath);src/data/mod.json;src/data/modstate.json;src/data/settings.json;src/data/CareerDifficultySettings.json;LICENSE;README.md"
+      SourceFiles="$(TargetPath);src/data/mod.json;src/data/modstate.json;src/data/settings.json;src/data/CareerDifficultySettings.json;LICENSE;README.md;SAD.png"
       DestinationFolder="$(BTPATH)/Mods/ScalingAIDifficulty/"
       OverwriteReadOnlyFiles="true"
       SkipUnchangedFiles="false"
