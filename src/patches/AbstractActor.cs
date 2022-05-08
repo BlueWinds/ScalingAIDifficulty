@@ -19,16 +19,15 @@ namespace ScalingAIDifficulty {
                   return;
                 }
 
-                if (!sim.CompanyStats.ContainsStatistic("SAD_points")) {
-                  SAD.modLog.Debug?.Write($"Company does not have SAD_points statistic. No effects applied to {__instance.UnitName}");
-                  return;
-                }
-
-                float points = sim.CompanyStats.GetStatistic("SAD_points").CurrentValue.Value<float>();
+                float points = sim.CompanyStats.GetValue<float>("SAD_points");
 
                 if (s.ContractDifficulty.ContainsKey(overrideID)) {
                     points += s.ContractDifficulty[overrideID];
+                    SAD.modLog.Debug?.Write($"0 SAD_points. No effects applied to {__instance.UnitName}");
+                    return;
                 }
+
+                if (points == 0) {}
 
                 if (__instance.team.IsLocalPlayer) {
                     SAD.modLog.Debug?.Write($"Applying SAD stats for {__instance.UnitName} on player team");
@@ -71,8 +70,16 @@ namespace ScalingAIDifficulty {
         public static void Postfix(AbstractActor __instance) {
             try {
                 if (__instance.team.IsLocalPlayer) {
-                  SAD.modLog.Debug?.Write($"{__instance.UnitName} destroyed on player team.");
-                  Contract_CompleteContract_Patch.unitDestroyedThisContract = true;
+                    if (__instance.StatCollection.GetValue<bool>("CUFakeVehicle")) {
+                        SAD.modLog.Debug?.Write($"{__instance.UnitName} (vehicle) destroyed on player team.");
+                        Contract_CompleteContract_Patch.vehicleDestroyedThisContract = true;
+                    } else if (__instance.StatCollection.GetValue<bool>("CUTrooperSquad")) {
+                        SAD.modLog.Debug?.Write($"{__instance.UnitName} (battle armor) destroyed on player team.");
+                        Contract_CompleteContract_Patch.baDestroyedThisContract = true;
+                    } else {
+                        SAD.modLog.Debug?.Write($"{__instance.UnitName} (mech) destroyed on player team.");
+                        Contract_CompleteContract_Patch.mechDestroyedThisContract = true;
+                    }
                 }
             } catch (Exception e) {
                 SAD.modLog.Error?.Write(e);

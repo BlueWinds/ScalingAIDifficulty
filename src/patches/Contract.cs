@@ -10,7 +10,9 @@ namespace ScalingAIDifficulty {
         // This can be set to true in AbstractActor.cs, AbstractActor_HandleDeath_Patch
         // We use our own flag rather than Contract.PlayerUnitResults because we want to track units that were destroyed
         // but recovered.
-        public static bool unitDestroyedThisContract = false;
+        public static bool mechDestroyedThisContract = false;
+        public static bool vehicleDestroyedThisContract = false;
+        public static bool baDestroyedThisContract = false;
 
         public static void Postfix(Contract __instance, MissionResult result, bool isGoodFaithEffort) {
             try {
@@ -18,7 +20,9 @@ namespace ScalingAIDifficulty {
 
                 if (s.IgnoreContracts.Contains(__instance.Override.ID)) {
                   SAD.modLog.Debug?.Write($"Contract {__instance.Override.ID} is in IgnoreContracts. No points gained or lost.");
-                  unitDestroyedThisContract = false;
+                  mechDestroyedThisContract = false;
+                  vehicleDestroyedThisContract = false;
+                  baDestroyedThisContract = false;
                   return;
                 }
 
@@ -45,12 +49,12 @@ namespace ScalingAIDifficulty {
                   basePointChange = s.points.pilotKilled;
                 }
 
-                if (unitDestroyedThisContract && s.points.unitDestroyed < basePointChange) {
-                  basePointChange = s.points.unitDestroyed;
-                }
+                if (mechDestroyedThisContract && s.points.mechDestroyed < basePointChange) { basePointChange = s.points.mechDestroyed; }
+                if (vehicleDestroyedThisContract && s.points.vehicleDestroyed < basePointChange) { basePointChange = s.points.vehicleDestroyed; }
+                if (baDestroyedThisContract && s.points.battleArmorDestroyed < basePointChange) { basePointChange = s.points.battleArmorDestroyed; }
 
                 SAD.modLog.Debug?.Write($"Contract complete: {__instance.Override.ID}, MissionResult: {result}");
-                SAD.modLog.Debug?.Write($"pilotInjured: {pilotInjured}, pilotKilled: {pilotKilled}, unitDestroyedThisContract: {unitDestroyedThisContract}");
+                SAD.modLog.Debug?.Write($"pilotInjured: {pilotInjured}, pilotKilled: {pilotKilled}, mechDestroyedThisContract: {mechDestroyedThisContract}, vehicle: {vehicleDestroyedThisContract}, ba: {baDestroyedThisContract}");
 
                  float newPoints = basePointChange * basePointChangeMultiplier;
                 if (sim.CompanyStats.ContainsStatistic("SAD_points")) {
@@ -67,7 +71,9 @@ namespace ScalingAIDifficulty {
                 SAD.modLog.Error?.Write(e);
             }
 
-            unitDestroyedThisContract = false;
+            mechDestroyedThisContract = false;
+            vehicleDestroyedThisContract = false;
+            baDestroyedThisContract = false;
         }
     }
 }

@@ -11,7 +11,9 @@ namespace ScalingAIDifficulty {
       public float defeat = 0;
       public float pilotInjured = 0;
       public float pilotKilled = 0;
-      public float unitDestroyed = 0;
+      public float mechDestroyed = 0;
+      public float vehicleDestroyed = 0;
+      public float battleArmorDestroyed = 0;
     }
 
     public class PointEffect {

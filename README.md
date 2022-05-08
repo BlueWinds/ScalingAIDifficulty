@@ -15,7 +15,9 @@ When a mission concludes, SAD looks at the `points` setting in `settings.json` a
  - `retreat`: Applies if the player withdrew (good or bad faith) or was defeated.
  - `defeat`: Applies if the player withdrew (good or bad faith) or was defeated.
  - `injury`: Applies if at least one player pilot took an injury that will leave them in medbay (eg, was not soaked with guts or by special equipment).
- - `unitDestruction`: Applies if at least one player unit was destroyed (even if that unit is recoverable).
+ - `mechDestroyed`: Applies if at least one player mech was destroyed (even if that unit is recoverable).
+ - `vehicleDestroyed`: Applies if at least one player vehicle was destroyed (even if that unit is recoverable). Will have no effect unless you're using CustomBundle to allow player-controlled vehicles.
+ - `baDestroyed`: Applies if at least one player battle armor squad was destroyed (even if that unit is recoverable). Will have no effect unless you're using CustomBundle to allow player-controlled vehicles.
  - `pilotDeath`: Applies if at least one player pilot was KIA.
 
 For example, if a player wins, has an injury and loses a unit, SAD will search those three modifiers for the lowest one (most negative) and apply it.
