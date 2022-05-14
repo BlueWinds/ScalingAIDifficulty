@@ -27,8 +27,6 @@ namespace ScalingAIDifficulty {
                 }
 
                 SimGameState sim = SceneSingletonBehavior<UnityGameInstance>.Instance.Game.Simulation;
-
-                float basePointChangeMultiplier = (float)sim.Constants.Story.ArgoMechTechs / 100.0f;
                 float basePointChange = 0;
 
                 if (result == MissionResult.Victory) {
@@ -56,7 +54,7 @@ namespace ScalingAIDifficulty {
                 SAD.modLog.Debug?.Write($"Contract complete: {__instance.Override.ID}, MissionResult: {result}");
                 SAD.modLog.Debug?.Write($"pilotInjured: {pilotInjured}, pilotKilled: {pilotKilled}, mechDestroyedThisContract: {mechDestroyedThisContract}, vehicle: {vehicleDestroyedThisContract}, ba: {baDestroyedThisContract}");
 
-                 float newPoints = basePointChange * basePointChangeMultiplier;
+                 float newPoints = basePointChange;
                 if (sim.CompanyStats.ContainsStatistic("SAD_points")) {
                     newPoints += sim.CompanyStats.GetStatistic("SAD_points").CurrentValue.Value<float>();
                 }
@@ -65,7 +63,7 @@ namespace ScalingAIDifficulty {
                 SimGameStat stat = new SimGameStat("SAD_points", newPoints, true);
                 SimGameState.SetSimGameStat(stat, sim.CompanyStats);
 
-                SAD.modLog.Debug?.Write($"basePointChange: {basePointChange}, basePointChangeMultiplier (story.ArgoMechTechs / 100): {basePointChangeMultiplier}, total SAD_points: {sim.CompanyStats.GetValue<float>("SAD_points")} (clamped between {s.minPoints}, {s.maxPoints})");
+                SAD.modLog.Debug?.Write($"basePointChange: {basePointChange}, total SAD_points: {sim.CompanyStats.GetValue<float>("SAD_points")} (clamped between {s.minPoints}, {s.maxPoints})");
             }
             catch (Exception e) {
                 SAD.modLog.Error?.Write(e);

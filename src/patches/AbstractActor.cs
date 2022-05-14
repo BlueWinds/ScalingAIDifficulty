@@ -15,27 +15,32 @@ namespace ScalingAIDifficulty {
                 string overrideID = __instance.Combat.ActiveContract.Override.ID;
 
                 if (s.IgnoreContracts.Contains(overrideID)) {
-                  SAD.modLog.Debug?.Write($"Contract {overrideID} is in IgnoreContracts. Not applying effects to {__instance.UnitName}");
+                  SAD.modLog.Debug?.Write($"Contract {overrideID} is in IgnoreContracts. Not applying effects to {__instance.UnitName}.");
                   return;
                 }
 
-                float points = sim.CompanyStats.GetValue<float>("SAD_points");
+                float basePoints = sim.CompanyStats.GetValue<float>("SAD_points");
+                float pointsMultiplier = (float)sim.Constants.Story.ArgoMechTechs / 100.0f;
+
+                float points = basePoints * pointsMultiplier;
 
                 if (s.ContractDifficulty.ContainsKey(overrideID)) {
+                    SAD.modLog.Debug?.Write($"Adding {s.ContractDifficulty[overrideID]} points to {overrideID} because of ContractDifficulty.");
                     points += s.ContractDifficulty[overrideID];
-                    SAD.modLog.Debug?.Write($"0 SAD_points. No effects applied to {__instance.UnitName}");
+                }
+
+                if (points == 0) {
+                    SAD.modLog.Debug?.Write($"0 SAD_points, no effects applied to {__instance.UnitName}. basePoints: {basePoints}, pointsMultiplier: {pointsMultiplier}");
                     return;
                 }
 
-                if (points == 0) {}
-
                 if (__instance.team.IsLocalPlayer) {
-                    SAD.modLog.Debug?.Write($"Applying SAD stats for {__instance.UnitName} on player team");
+                    SAD.modLog.Debug?.Write($"Applying SAD stats for {__instance.UnitName} on player team ({points} points from basePoints: {basePoints}, pointsMultiplier: {pointsMultiplier})");
                     foreach (PointEffect effect in s.SelfEffectsPerPoint) {
                         applyStatEffect(__instance, effect, points);
                     }
                 } else if (__instance.team.IsEnemy(__instance.Combat.LocalPlayerTeam)) {
-                    SAD.modLog.Debug?.Write($"Applying SAD stats for {__instance.UnitName} on enemy team");
+                    SAD.modLog.Debug?.Write($"Applying SAD stats for {__instance.UnitName} on enemy team ({points} points from basePoints: {basePoints}, pointsMultiplier: {pointsMultiplier})");
                     foreach (PointEffect effect in s.EnemyEffectsPerPoint) {
                         applyStatEffect(__instance, effect, points);
                     }
@@ -48,20 +53,20 @@ namespace ScalingAIDifficulty {
         }
 
         public static void applyStatEffect(AbstractActor __instance, PointEffect effect, float points) {
-            SAD.modLog.Trace?.Write($"    {effect.statName}: {effect.operation} {effect.modValue}; Points: {points}");
-            if (points == 0) { return; }
-
             Statistic stat = __instance.StatCollection.GetStatistic(effect.statName);
 
+            float value = 0;
             if (effect.operation == StatCollection.StatOperation.Float_Add) {
-                float value = effect.modValue * points;
+                value = effect.modValue * points;
                 __instance.StatCollection.Float_Add(stat, value);
             } else if (effect.operation == StatCollection.StatOperation.Float_Multiply) {
-                float value = (float)Math.Pow(effect.modValue, points);
+                value = (float)Math.Pow(effect.modValue, points);
                 __instance.StatCollection.Float_Multiply(stat, value);
             } else {
                 SAD.modLog.Info?.Write($"Invalid operation.");
             }
+
+            SAD.modLog.Trace?.Write($"    {effect.statName}: {effect.operation} {effect.modValue}; value {value}");
         }
     }
 
